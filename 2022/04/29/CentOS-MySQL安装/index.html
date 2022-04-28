@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 安装前说明1.1 Linux系统及工具的准备 安装并启动好两台虚拟机： CentOS 7   掌握克隆虚拟机的操作     mac地址 主机名       ip地址 UUID     安装有Xshell 和Xftp 等访问CentOS系统的工具  CentOS6和CentOS7在MySQL的使用中的区别   121. 防火墙：6是iptables，7是firewalld2. 启动服务的命令：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS_MySQL安装">
+<meta property="og:url" content="http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="sher6j">
+<meta property="og:description" content="1. 安装前说明1.1 Linux系统及工具的准备 安装并启动好两台虚拟机： CentOS 7   掌握克隆虚拟机的操作     mac地址 主机名       ip地址 UUID     安装有Xshell 和Xftp 等访问CentOS系统的工具  CentOS6和CentOS7在MySQL的使用中的区别   121. 防火墙：6是iptables，7是firewalld2. 启动服务的命令：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566266567-55ead30d-389f-4fb9-aa6e-1ad031db3f45.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566283830-67b6dc80-e9df-4ce1-bb77-41a1be833753.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566553702-df51078c-ecc1-4593-a3d4-e751778e78d6.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566570551-c14e2f28-433e-4e5a-8e05-30ced97c58fb.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566611339-7ad66451-2a65-437e-8794-97e36e5ce5b6.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566686969-349a4e25-a931-4b81-a361-e3f5a2846865.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566836657-d901c6d3-404d-4c6d-a8da-6e5e81dcbb83.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566854477-894796cd-b4e8-4032-a519-46c3b0d866be.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566927228-be8c463d-1780-4c10-b421-8c892fc256b1.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566986447-4310291b-e5df-426f-b2ff-a67a335225a6.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567074697-f27d0847-e7fb-4768-852e-f4024d54f54d.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567142136-de48ee5e-db49-4a42-acb6-0f145ff100b0.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567293415-4a03d1a3-f30c-45b8-b312-b30ceb1ff046.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567373832-0e084657-08cc-460e-9e30-ef8646c92d6a.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567422547-324dd190-34a1-4de4-9bff-6099adbbdffe.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567543494-9a7c3359-6415-44a8-9b49-8235f47c912a.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567600672-c132d95a-a295-4ac8-83e8-8b8e40fee401.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567689135-00a6ac83-3ab0-41f6-aaf4-0e90b8074d36.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567849883-88c91804-6a4e-4ff6-bd3c-e363de3d6043.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567891689-15b1be42-4561-45ed-b90c-be7778ca6c4a.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567960328-26d14ed0-424e-4f96-a4c4-da0b1f3fbe38.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567689135-00a6ac83-3ab0-41f6-aaf4-0e90b8074d36.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648568574642-c05b9451-0f8c-44b3-899d-32195e62ddd6.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648568656270-2f55c96a-a6ee-433d-9057-f29ab76f6c2e.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648621405888-c04bee78-83fd-4331-8acc-0dce46782a07.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648621529056-97b65378-ba36-41d1-9491-83e60154f16e.png">
+<meta property="article:published_time" content="2022-04-28T17:20:49.000Z">
+<meta property="article:modified_time" content="2022-04-28T17:28:13.443Z">
+<meta property="article:author" content="sher6j">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566266567-55ead30d-389f-4fb9-aa6e-1ad031db3f45.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>CentOS_MySQL安装</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2022/04/28/hello-world/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&text=CentOS_MySQL安装"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&is_video=false&description=CentOS_MySQL安装"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CentOS_MySQL安装&body=Check out this article: http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&name=CentOS_MySQL安装&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&t=CentOS_MySQL安装"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E5%89%8D%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">1. 安装前说明</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Linux%E7%B3%BB%E7%BB%9F%E5%8F%8A%E5%B7%A5%E5%85%B7%E7%9A%84%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Linux系统及工具的准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E8%BF%87MySQL"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 查看是否安装过MySQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-MySQL%E7%9A%84%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 MySQL的卸载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-MySQL%E7%9A%84Linux%E7%89%88%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">2. MySQL的Linux版安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E4%B8%8B%E8%BD%BDMySQL%E6%8C%87%E5%AE%9A%E7%89%88%E6%9C%AC"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 下载MySQL指定版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-CentOS7%E4%B8%8B%E6%A3%80%E6%9F%A5MySQL%E4%BE%9D%E8%B5%96"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 CentOS7下检查MySQL依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-CentOS7%E4%B8%8BMySQL%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 CentOS7下MySQL安装过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E6%9F%A5%E7%9C%8BMySQL%E7%89%88%E6%9C%AC"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. 查看MySQL版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 服务的初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E5%90%AF%E5%8A%A8MySQL%EF%BC%8C%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81"><span class="toc-number">2.6.</span> <span class="toc-text">2.6 启动MySQL，查看状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-7-%E6%9F%A5%E7%9C%8BMySQL%E6%9C%8D%E5%8A%A1%E6%98%AF%E5%90%A6%E8%87%AA%E5%90%AF%E5%8A%A8"><span class="toc-number">2.7.</span> <span class="toc-text">2.7 查看MySQL服务是否自启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-MySQL%E7%99%BB%E5%BD%95"><span class="toc-number">3.</span> <span class="toc-text">3. MySQL登录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E9%A6%96%E6%AC%A1%E7%99%BB%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 首次登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 修改密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E8%AE%BE%E7%BD%AE%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 设置远程登录</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-MySQL8%E7%9A%84%E4%B8%BB%E8%A6%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">4.</span> <span class="toc-text">4. MySQL8的主要目录结构</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CentOS_MySQL安装
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">sher6j</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-28T17:20:49.000Z" itemprop="datePublished">2022-04-29</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85/">软件安装</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Linux/" rel="tag">Linux</a>, <a class="tag-link-link" href="/tags/MySQL/" rel="tag">MySQL</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h1 id="1-安装前说明"><a href="#1-安装前说明" class="headerlink" title="1. 安装前说明"></a>1. 安装前说明</h1><h2 id="1-1-Linux系统及工具的准备"><a href="#1-1-Linux系统及工具的准备" class="headerlink" title="1.1 Linux系统及工具的准备"></a>1.1 Linux系统及工具的准备</h2><ul>
+<li><p>安装并启动好两台虚拟机： CentOS 7</p>
+</li>
+<li><ul>
+<li>掌握克隆虚拟机的操作</li>
+</ul>
+</li>
+<li><ul>
+<li><ul>
+<li>mac地址</li>
+<li>主机名</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><ul>
+<li><ul>
+<li>ip地址</li>
+<li>UUID</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>安装有Xshell 和Xftp 等访问CentOS系统的工具</p>
+</li>
+<li><p>CentOS6和CentOS7在MySQL的使用中的区别</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 防火墙：6是iptables，7是firewalld</span><br><span class="line">2. 启动服务的命令：6是service，7是systemctl</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-查看是否安装过MySQL"><a href="#1-2-查看是否安装过MySQL" class="headerlink" title="1.2 查看是否安装过MySQL"></a>1.2 查看是否安装过MySQL</h2><ul>
+<li>如果你是用rpm安装, 检查一下RPM PACKAGE：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa | grep -i mysql <span class="comment"># -i 忽略大小写</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查mysql service：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status mysqld.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果存在mysql-libs的旧版本包，显示如下：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566266567-55ead30d-389f-4fb9-aa6e-1ad031db3f45.png" alt="img"></p>
+<ul>
+<li>如果不存在mysql-lib的版本，显示如下：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566283830-67b6dc80-e9df-4ce1-bb77-41a1be833753.png" alt="img"></p>
+<h2 id="1-3-MySQL的卸载"><a href="#1-3-MySQL的卸载" class="headerlink" title="1.3 MySQL的卸载"></a>1.3 MySQL的卸载</h2><p><strong>1. 关闭 mysql 服务</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop mysqld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 查看当前 mysql 安装状况</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa | grep -i mysql</span><br><span class="line"><span class="comment"># 或</span></span><br><span class="line">yum list installed | grep mysql</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 卸载上述命令查询出的已安装程序</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum remove mysql-xxx mysql-xxx mysql-xxx mysqk-xxxx</span><br></pre></td></tr></table></figure>
+
+<p>务必卸载干净，反复执行「rpm -qa | grep -i mysql 」确认是否有卸载残留</p>
+<p><strong>4. 删除 mysql 相关文件</strong></p>
+<ul>
+<li>查找相关文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -name mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除上述命令查找出的相关文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> -rf xxx</span><br></pre></td></tr></table></figure>
+
+<p><strong>5.删除 my.cnf</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> -rf /etc/my.cnf</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-MySQL的Linux版安装"><a href="#2-MySQL的Linux版安装" class="headerlink" title="2. MySQL的Linux版安装"></a>2. MySQL的Linux版安装</h1><h2 id="2-1-下载MySQL指定版本"><a href="#2-1-下载MySQL指定版本" class="headerlink" title="2.1 下载MySQL指定版本"></a>2.1 下载MySQL指定版本</h2><p><strong>1. 下载地址</strong></p>
+<p>官网： <a target="_blank" rel="noopener" href="https://www.mysql.com/">https://www.mysql.com</a></p>
+<p><strong>2. 打开官网，点击DOWNLOADS</strong></p>
+<p>然后，点击「MySQL Community(GPL) Downloads」</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566553702-df51078c-ecc1-4593-a3d4-e751778e78d6.png" alt="img"></p>
+<p><strong>3. 点击 MySQL Community Server</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566570551-c14e2f28-433e-4e5a-8e05-30ced97c58fb.png" alt="img"></p>
+<p><strong>4. 在General Availability(GA) Releases中选择适合的版本</strong></p>
+<ul>
+<li>如果安装Windows 系统下MySQL ，推荐下载MSI安装程序；点击Go to Download Page 进行下载即可</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566611339-7ad66451-2a65-437e-8794-97e36e5ce5b6.png" alt="img"></p>
+<p><strong>5. Linux系统下安装MySQL的几种方式</strong></p>
+<p><strong>5.1 Linux系统下安装软件的常用三种方式：</strong></p>
+<p><strong>方式1：rpm命令</strong></p>
+<p>使用rpm命令安装扩展名为”.rpm”的软件包。</p>
+<p>.rpm包的一般格式：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566686969-349a4e25-a931-4b81-a361-e3f5a2846865.png" alt="img"></p>
+<p><strong>方式2：yum命令</strong></p>
+<p>需联网，从互联网获取的yum源，直接使用yum命令安装。</p>
+<p><strong>方式3：编译安装源码包</strong></p>
+<p>针对tar.gz 这样的压缩格式，要用tar命令来解压；如果是其它压缩格式，就使用其它命令。</p>
+<p><strong>5.2 Linux系统下安装MySQL，官方给出多种安装方式</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>安装方式</strong></th>
+<th><strong>特点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>rpm</td>
+<td>安装简单，灵活性差，无法灵活选择版本、升级</td>
+</tr>
+<tr>
+<td>rpm repository</td>
+<td>安装包极小，版本安装简单灵活，升级方便，需要联网安装</td>
+</tr>
+<tr>
+<td>通用二进制包</td>
+<td>安装比较复杂，灵活性高，平台通用性好</td>
+</tr>
+<tr>
+<td>源码包</td>
+<td>安装最复杂，时间长，参数设置灵活，性能好</td>
+</tr>
+</tbody></table>
+<ul>
+<li>这里不能直接选择CentOS 7系统的版本，所以选择与之对应的Red Hat Enterprise Linux</li>
+<li><a target="_blank" rel="noopener" href="https://downloads.mysql.com/archives/community/">https://downloads.mysql.com/archives/community/</a> 直接点Download下载RPM Bundle全量包。包括了所有下面的组件。不需要一个一个下载了。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566836657-d901c6d3-404d-4c6d-a8da-6e5e81dcbb83.png" alt="img"></p>
+<p><strong>6. 下载的tar包，用压缩工具打开</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566854477-894796cd-b4e8-4032-a519-46c3b0d866be.png" alt="img"></p>
+<p>解压后rpm安装包 （红框为抽取出来的安装包）</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566927228-be8c463d-1780-4c10-b421-8c892fc256b1.png" alt="img"></p>
+<h2 id="2-2-CentOS7下检查MySQL依赖"><a href="#2-2-CentOS7下检查MySQL依赖" class="headerlink" title="2.2 CentOS7下检查MySQL依赖"></a>2.2 CentOS7下检查MySQL依赖</h2><p><strong>1. 检查&#x2F;tmp临时目录权限（必不可少）</strong></p>
+<p>由于mysql安装过程中，会通过mysql用户在&#x2F;tmp目录下新建tmp_db文件，所以请给&#x2F;tmp较大的权限。执行 ：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> -R 777 /tmp</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648566986447-4310291b-e5df-426f-b2ff-a67a335225a6.png" alt="img"></p>
+<p><strong>2. 安装前，检查依赖</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep libaio</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果存在libaio包如下：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567074697-f27d0847-e7fb-4768-852e-f4024d54f54d.png" alt="img"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep net-tools</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果存在net-tools包如下：</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567142136-de48ee5e-db49-4a42-acb6-0f145ff100b0.png" alt="img"></p>
+<ul>
+<li>如果不存在需要到centos安装盘里进行rpm安装。安装linux如果带图形化界面，这些都是安装好的。</li>
+</ul>
+<h2 id="2-3-CentOS7下MySQL安装过程"><a href="#2-3-CentOS7下MySQL安装过程" class="headerlink" title="2.3 CentOS7下MySQL安装过程"></a>2.3 CentOS7下MySQL安装过程</h2><p><strong>1. 将安装程序拷贝到&#x2F;opt目录下</strong></p>
+<p>拷贝如下5个包即可</p>
+<p>在mysql的安装文件目录下执行：（必须按照顺序执行）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh mysql-community-common-8.0.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-plugins-8.0.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-8.0.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-8.0.25-1.el7.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-server-8.0.25-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>注意: 如在检查工作时，没有检查mysql依赖环境在安装mysql-community-server会报错</p>
+</li>
+<li><p>rpm 是Redhat Package Manage缩写，通过RPM的管理，用户可以把源代码包装成以rpm为扩展名的文件形式，易于安装。</p>
+</li>
+<li><p>-i , –install 安装软件包</p>
+</li>
+<li><p>-v , –verbose 提供更多的详细信息输出</p>
+</li>
+<li><p>-h , –hash 软件包安装的时候列出哈希标记 (和 -v 一起使用效果更好)，展示进度条</p>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567293415-4a03d1a3-f30c-45b8-b312-b30ceb1ff046.png" alt="img"></p>
+<p><strong>2. 安装过程截图</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567373832-0e084657-08cc-460e-9e30-ef8646c92d6a.png" alt="img"></p>
+<p>安装过程中可能的报错信息：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567422547-324dd190-34a1-4de4-9bff-6099adbbdffe.png" alt="img"></p>
+<p>解决办法：</p>
+<p>一个命令：「 yum remove mysql-libs 」解决，清除之前安装过的依赖即可</p>
+<h2 id="2-4-查看MySQL版本"><a href="#2-4-查看MySQL版本" class="headerlink" title="2.4. 查看MySQL版本"></a>2.4. 查看MySQL版本</h2><p>执行如下命令，如果成功表示安装mysql成功。类似java -version如果打出版本等信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql --version</span><br><span class="line"><span class="comment">#或</span></span><br><span class="line">mysqladmin --version</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567543494-9a7c3359-6415-44a8-9b49-8235f47c912a.png" alt="img"></p>
+<p>执行如下命令，查看是否安装成功。需要增加 -i 不用去区分大小写，否则搜索不到。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -qa|grep -i mysql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567600672-c132d95a-a295-4ac8-83e8-8b8e40fee401.png" alt="img"></p>
+<h2 id="2-5-服务的初始化"><a href="#2-5-服务的初始化" class="headerlink" title="2.5 服务的初始化"></a>2.5 服务的初始化</h2><p>为了保证数据库目录与文件的所有者为 mysql 登录用户，如果你是以 root 身份运行 mysql 服务，需要执行下面的命令初始化：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqld --initialize --user=mysql</span><br></pre></td></tr></table></figure>
+
+<p>说明： –initialize 选项默认以“安全”模式来初始化，则会为 root 用户生成一个密码并将该密码标记为过期，登录后你需要设置一个新的密码。生成的临时密码会往日志中记录一份。</p>
+<p>查看密码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /var/log/mysqld.log</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567689135-00a6ac83-3ab0-41f6-aaf4-0e90b8074d36.png" alt="img"></p>
+<h2 id="2-6-启动MySQL，查看状态"><a href="#2-6-启动MySQL，查看状态" class="headerlink" title="2.6 启动MySQL，查看状态"></a>2.6 启动MySQL，查看状态</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#加不加.service后缀都可以</span></span><br><span class="line">systemctl start mysqld.service       	<span class="comment"># 启动</span></span><br><span class="line">systemctl stop mysqld.service					<span class="comment"># 关闭</span></span><br><span class="line">systemctl restart mysqld.service			<span class="comment"># 重启</span></span><br><span class="line">systemctl status mysqld.service				<span class="comment"># 查看状态</span></span><br></pre></td></tr></table></figure>
+
+<p>mysqld 这个可执行文件就代表着MySQL 服务器程序，运行这个可执行文件就可以直接启动一个</p>
+<p>服务器进程。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567849883-88c91804-6a4e-4ff6-bd3c-e363de3d6043.png" alt="img"></p>
+<p>查看进程：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep -i mysql</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567891689-15b1be42-4561-45ed-b90c-be7778ca6c4a.png" alt="img"></p>
+<h2 id="2-7-查看MySQL服务是否自启动"><a href="#2-7-查看MySQL服务是否自启动" class="headerlink" title="2.7 查看MySQL服务是否自启动"></a>2.7 查看MySQL服务是否自启动</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl list-unit-files|grep mysqld.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567960328-26d14ed0-424e-4f96-a4c4-da0b1f3fbe38.png" alt="img"></p>
+<p>默认是enabled，表示自启动</p>
+<ul>
+<li>如不是enabled可以运行如下命令设置自启动</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> mysqld.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果希望不进行自启动，运行如下命令设置</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">disable</span> mysqld.service</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-MySQL登录"><a href="#3-MySQL登录" class="headerlink" title="3. MySQL登录"></a>3. MySQL登录</h1><h2 id="3-1-首次登录"><a href="#3-1-首次登录" class="headerlink" title="3.1 首次登录"></a>3.1 首次登录</h2><p>通过 mysql -hlocalhost -P3306 -uroot -p 进行登录，在Enter password：录入初始化密码</p>
+<p>即生成的乱七八糟的密码</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648567689135-00a6ac83-3ab0-41f6-aaf4-0e90b8074d36.png" alt="img"></p>
+<h2 id="3-2-修改密码"><a href="#3-2-修改密码" class="headerlink" title="3.2 修改密码"></a>3.2 修改密码</h2><ul>
+<li>因为初始化密码默认是过期的，所以查看数据库会报错</li>
+<li>修改密码：</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED <span class="keyword">BY</span> <span class="string">&#x27;new_password&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-设置远程登录"><a href="#3-3-设置远程登录" class="headerlink" title="3.3 设置远程登录"></a>3.3 设置远程登录</h2><p><strong>1. 当前问题</strong></p>
+<p>在用SQLyog或Navicat中配置远程连接Mysql数据库时遇到如下报错信息，这是由于Mysql配置了不支持远程连接引起的。</p>
+<p><strong>2. 确认网络</strong></p>
+<ol>
+<li>在远程机器上使用ping ip地址保证网络畅通</li>
+<li>在远程机器上使用telnet命令保证端口号开放访问</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet ip地址 端口号</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 关闭防火墙或开放端口</strong></p>
+<p><strong>方式一：关闭防火墙</strong></p>
+<ul>
+<li>CentOS6 ：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service iptables stop</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>CentOS7：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br><span class="line">systemctl status firewalld.service</span><br><span class="line">systemctl stop firewalld.service</span><br><span class="line"><span class="comment">#设置开机启用防火墙</span></span><br><span class="line">systemctl <span class="built_in">enable</span> firewalld.service</span><br><span class="line"><span class="comment">#设置开机禁用防火墙</span></span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二：开放端口</strong></p>
+<ul>
+<li>查看开放的端口号</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --list-all</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置开放的端口号</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --add-service=http --permanent</span><br><span class="line">firewall-cmd --add-port=3306/tcp --permanent</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>重启防火墙</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p><strong>4. Linux下修改配置</strong></p>
+<p>在Linux系统MySQL下测试：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use mysql;</span><br><span class="line"><span class="keyword">select</span> Host,<span class="keyword">User</span> <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648568574642-c05b9451-0f8c-44b3-899d-32195e62ddd6.png" alt="img"></p>
+<p>可以看到root用户的当前主机配置信息为localhost。</p>
+<p><strong>修改Host为通配符%</strong></p>
+<p>Host列指定了允许用户登录所使用的IP，比如user&#x3D;root Host&#x3D;192.168.1.1。这里的意思就是说root用户只能通过192.168.1.1的客户端去访问。 user&#x3D;root Host&#x3D;localhost，表示只能通过本机客户端去访问。而%是个通配符，如果Host&#x3D;192.168.1.%，那么就表示只要是IP地址前缀为“192.168.1.”的客户端都可以连接。如果Host&#x3D;% ，表示所有IP都有连接权限。</p>
+<p>注意：在生产环境下不能为了省事将host设置为%，这样做会存在安全问题，具体的设置可以根据生产环境的IP进行设置。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> <span class="keyword">user</span> <span class="keyword">set</span> host <span class="operator">=</span> <span class="string">&#x27;%&#x27;</span> <span class="keyword">where</span> <span class="keyword">user</span> <span class="operator">=</span><span class="string">&#x27;root&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>Host设置了“%”后便可以允许远程访问。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648568656270-2f55c96a-a6ee-433d-9057-f29ab76f6c2e.png" alt="img"></p>
+<p>Host修改完成后记得执行flush privileges使配置立即生效：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p>启动MySQL服务后，可以通过mysql命令来登录MySQL服务器，登录的完整命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql –h hostname|hostIP –P port –u username –p DatabaseName –e <span class="string">&quot;SQL语句&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>下面详细介绍命令中的参数：</p>
+<ul>
+<li><p>-h参数后面接主机名或者主机IP，hostname为主机，hostIP为主机IP。</p>
+</li>
+<li><p>-P参数后面接MySQL服务的端口，通过该参数连接到指定的端口。MySQL服务的默认端口是3306，不使用该参数时自动连接到3306端口，port为连接的端口号。</p>
+</li>
+<li><p>-u参数后面接用户名，username为用户名。</p>
+</li>
+<li><p>-p参数会提示输入密码。</p>
+</li>
+<li><p>DatabaseName参数指明登录到哪一个数据库中。如果没有该参数，就会直接登录到MySQL数据库中，然后可以使用USE命令来选择数据库。</p>
+</li>
+<li><p>-e参数后面可以直接加SQL语句。登录MySQL服务器以后即可执行这个SQL语句，然后退出MySQL服务器。</p>
+</li>
+</ul>
+<h1 id="4-MySQL8的主要目录结构"><a href="#4-MySQL8的主要目录结构" class="headerlink" title="4. MySQL8的主要目录结构"></a>4. MySQL8的主要目录结构</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -name mysql</span><br></pre></td></tr></table></figure>
+
+<p>安装好MySQL 8之后，输入上面命令查看如下的目录结构：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648621405888-c04bee78-83fd-4331-8acc-0dce46782a07.png" alt="img"></p>
+<p><strong>MySQL数据库文件的存放路径：&#x2F;var&#x2F;lib&#x2F;mysql&#x2F;</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;datadir&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.nlark.com/yuque/0/2022/png/22980507/1648621529056-97b65378-ba36-41d1-9491-83e60154f16e.png" alt="img"></p>
+<p><strong>相关命令目录：&#x2F;usr&#x2F;bin（mysqladmin、mysqlbinlog、mysqldump等命令）和&#x2F;usr&#x2F;sbin。</strong></p>
+<p><strong>配置文件目录：&#x2F;usr&#x2F;share&#x2F;mysql-8.0（命令及配置文件），&#x2F;etc&#x2F;mysql（如my.cnf）</strong></p>
+<p>done.</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E5%89%8D%E8%AF%B4%E6%98%8E"><span class="toc-number">1.</span> <span class="toc-text">1. 安装前说明</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-Linux%E7%B3%BB%E7%BB%9F%E5%8F%8A%E5%B7%A5%E5%85%B7%E7%9A%84%E5%87%86%E5%A4%87"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Linux系统及工具的准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E6%9F%A5%E7%9C%8B%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E8%BF%87MySQL"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 查看是否安装过MySQL</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-MySQL%E7%9A%84%E5%8D%B8%E8%BD%BD"><span class="toc-number">1.3.</span> <span class="toc-text">1.3 MySQL的卸载</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-MySQL%E7%9A%84Linux%E7%89%88%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">2. MySQL的Linux版安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E4%B8%8B%E8%BD%BDMySQL%E6%8C%87%E5%AE%9A%E7%89%88%E6%9C%AC"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 下载MySQL指定版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-CentOS7%E4%B8%8B%E6%A3%80%E6%9F%A5MySQL%E4%BE%9D%E8%B5%96"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 CentOS7下检查MySQL依赖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-CentOS7%E4%B8%8BMySQL%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 CentOS7下MySQL安装过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E6%9F%A5%E7%9C%8BMySQL%E7%89%88%E6%9C%AC"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. 查看MySQL版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.5.</span> <span class="toc-text">2.5 服务的初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E5%90%AF%E5%8A%A8MySQL%EF%BC%8C%E6%9F%A5%E7%9C%8B%E7%8A%B6%E6%80%81"><span class="toc-number">2.6.</span> <span class="toc-text">2.6 启动MySQL，查看状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-7-%E6%9F%A5%E7%9C%8BMySQL%E6%9C%8D%E5%8A%A1%E6%98%AF%E5%90%A6%E8%87%AA%E5%90%AF%E5%8A%A8"><span class="toc-number">2.7.</span> <span class="toc-text">2.7 查看MySQL服务是否自启动</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-MySQL%E7%99%BB%E5%BD%95"><span class="toc-number">3.</span> <span class="toc-text">3. MySQL登录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E9%A6%96%E6%AC%A1%E7%99%BB%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 首次登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 修改密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E8%AE%BE%E7%BD%AE%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 设置远程登录</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-MySQL8%E7%9A%84%E4%B8%BB%E8%A6%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">4.</span> <span class="toc-text">4. MySQL8的主要目录结构</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&text=CentOS_MySQL安装"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&is_video=false&description=CentOS_MySQL安装"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CentOS_MySQL安装&body=Check out this article: http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&title=CentOS_MySQL安装"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&name=CentOS_MySQL安装&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://sher6j.top/2022/04/29/CentOS-MySQL%E5%AE%89%E8%A3%85/&t=CentOS_MySQL安装"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    sher6j
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
