@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="安装 elasticsearch创建用于启动 elasticsearch 服务的用户ES不能以root用户身份启动，所以必须创建普通用户:  创建一个新的es用户组 1[root@sher6j-01 ~]# groupadd es  创建新的用户es6j并将其放入es用户组 1[root@sher6j-01 ~]# useradd es6j -g es  修改es6j用户的密码 1[root@">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS_ElasticSearch安装">
+<meta property="og:url" content="http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="sher6j">
+<meta property="og:description" content="安装 elasticsearch创建用于启动 elasticsearch 服务的用户ES不能以root用户身份启动，所以必须创建普通用户:  创建一个新的es用户组 1[root@sher6j-01 ~]# groupadd es  创建新的用户es6j并将其放入es用户组 1[root@sher6j-01 ~]# useradd es6j -g es  修改es6j用户的密码 1[root@">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110131912168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110131931949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110131951786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132011775.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132030193.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132050848.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132107351.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132124988.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132219246.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201110132236713.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20201113162406721.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2022-01-06T11:24:59.000Z">
+<meta property="article:modified_time" content="2022-04-30T11:30:36.665Z">
+<meta property="article:author" content="sher6j">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Elasticsearch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20201110131912168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>CentOS_ElasticSearch安装</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2022/01/03/CentOS-Kafka%E5%AE%89%E8%A3%85/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&text=CentOS_ElasticSearch安装"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&is_video=false&description=CentOS_ElasticSearch安装"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CentOS_ElasticSearch安装&body=Check out this article: http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&name=CentOS_ElasticSearch安装&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&t=CentOS_ElasticSearch安装"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-elasticsearch"><span class="toc-number">1.</span> <span class="toc-text">安装 elasticsearch</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E5%90%AF%E5%8A%A8-elasticsearch-%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%94%A8%E6%88%B7"><span class="toc-number">1.1.</span> <span class="toc-text">创建用于启动 elasticsearch 服务的用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E5%AE%89%E8%A3%85-elasticsearch-%E6%9C%8D%E5%8A%A1%EF%BC%9B"><span class="toc-number">1.2.</span> <span class="toc-text">用普通用户安装 elasticsearch 服务；</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E6%9D%83%E9%99%90"><span class="toc-number">1.3.</span> <span class="toc-text">开启远程连接权限</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CentOS_ElasticSearch安装
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">sher6j</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-01-06T11:24:59.000Z" itemprop="datePublished">2022-01-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85/">软件安装</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Elasticsearch/" rel="tag">Elasticsearch</a>, <a class="tag-link-link" href="/tags/Linux/" rel="tag">Linux</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <meta name="referrer" content="no-referrer" />
+
+<h1 id="安装-elasticsearch"><a href="#安装-elasticsearch" class="headerlink" title="安装 elasticsearch"></a>安装 <code>elasticsearch</code></h1><h2 id="创建用于启动-elasticsearch-服务的用户"><a href="#创建用于启动-elasticsearch-服务的用户" class="headerlink" title="创建用于启动 elasticsearch 服务的用户"></a>创建用于启动 <code>elasticsearch</code> 服务的用户</h2><p>ES不能以root用户身份启动，所以必须创建普通用户:</p>
+<ul>
+<li><p>创建一个新的<code>es</code>用户组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@sher6j-01 ~]# groupadd es</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建新的用户<code>es6j</code>并将其放入<code>es</code>用户组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@sher6j-01 ~]# useradd es6j -g es</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改<code>es6j</code>用户的密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@sher6j-01 ~]# passwd es6j</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20201110131912168.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<blockquote>
+<p>之所以上面提示无效的密码，是因为我将密码设置为了 <code>1234</code>，过于简单，该提示可以忽略，只要重新输入密码即可设置密码成功</p>
+</blockquote>
+<h2 id="用普通用户安装-elasticsearch-服务；"><a href="#用普通用户安装-elasticsearch-服务；" class="headerlink" title="用普通用户安装 elasticsearch 服务；"></a>用普通用户安装 <code>elasticsearch</code> 服务；</h2><p>利用ftp工具将安装包上传至<code>es6j</code>的<code>home</code>目录下</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110131931949.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>然后对其进行解压：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[es6j@sher6j-01 ~]$ tar -zxvf elasticsearch-6.8.0.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>解压后其实就安装成功了，我们进入<code>elasticsearch</code>的目录进行查看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[es6j@sher6j-01 ~]$ cd elasticsearch-6.8.0/</span><br></pre></td></tr></table></figure>
+
+<p>其主要目录说明如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110131951786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>如果要启动<code>elasticsearch</code>服务，则进入<code>bin</code>目录下执行启动脚本即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[es6j@sher6j-01 elasticsearch-6.8.0]$ cd bin</span><br><span class="line">[es6j@sher6j-01 bin]$ ./elasticsearch</span><br></pre></td></tr></table></figure>
+
+<p>当出现started时代表启动成功</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110132011775.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>可以看到<code>elasticsearch</code>对外提供了两个端口<code>9200</code>和<code>9300</code>，其中<code>9200</code>作为Web端口可以用作浏览器访问，而<code>9300</code>作为TCP端口可以供如Java程序等进行连接。</p>
+<blockquote>
+<p>如果要关闭其服务，用 <code>Ctrl</code> + <code>C</code> 即可。</p>
+</blockquote>
+<p>我们可以以该主机中的任一用户使用 <code>curl</code> 命令模拟浏览器访问 <code>elasticsearch</code> 的服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@sher6j-01 ~]# curl http://localhost:9200</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20201110132030193.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>如上图可以看见 <code>elasticsearch</code> 响应的 <code>JSON</code> 串，而之所以用 <code>curl</code> 模拟而没有用外部浏览器直接访问，是因为 <code>elasticsearch</code> 默认只能够本机访问。</p>
+<h2 id="开启远程连接权限"><a href="#开启远程连接权限" class="headerlink" title="开启远程连接权限"></a>开启远程连接权限</h2><p>进入到 <code>config</code> 目录下，编辑其主配置文件 <code>eelasticsearch.yml</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[es6j@sher6j-01 elasticsearch-6.8.0]$ cd config/</span><br><span class="line">[es6j@sher6j-01 config]$ vim elasticsearch.yml</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>vim</code> 界面中搜索 <code>network.host</code> 配置项（<code>/</code>搜索）</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110132050848.png#pic_center" alt="在这里插入图片描述"></p>
+<p>原配置文件如下：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110132107351.png#pic_center" alt="在这里插入图片描述"></p>
+<p>将其修改为：<code>network.host: 0.0.0.0</code>。然后重新启动 <code>elasticsearch</code> 服务。</p>
+<p>然后我们发现就出现了如下的错误：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110132124988.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>当然还有可能是如下的三个错误，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ERROR: [3] bootstrap checks failed</span><br><span class="line">[1]: max file descriptors [4096] for elasticsearch process is too low, increase to at least [65535]</span><br><span class="line">[2]: max number of threads [3802] for user [es6j] is too low, increase to at least [4096]</span><br><span class="line">[3]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</span><br></pre></td></tr></table></figure>
+
+<p>这是因为一旦 <code>elasticsearch</code> 启动了远程连接，其认为是生产模式，所以就需要对内存、线程数等有所要求，所以我们需要将主机调整到符合要求的状态。</p>
+<p>修改主机的状态需要用 <code>root</code> 用户：</p>
+<ul>
+<li><p>&#96;&#96;&#96;<br>[root@sher6j-01 ~]# vim &#x2F;etc&#x2F;security&#x2F;limits.conf</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">在文件末尾插入如下参数后保存退出：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li><pre><code>          soft    nofile          65536
+</code></pre>
+</li>
+<li><pre><code>          hard    nofile          65536
+</code></pre>
+</li>
+<li><pre><code>          soft    nproc           4096
+</code></pre>
+</li>
+<li><pre><code>          hard    nproc           4096
+</code></pre>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132147171.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* 重新登录后，即可发现配置已经生效：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 ~]# ulimit -Hn<br>[root@sher6j-01 ~]# ulimit -Sn<br>[root@sher6j-01 ~]# ulimit -Hu<br>[root@sher6j-01 ~]# ulimit -Su<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132202297.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* ```</span><br><span class="line">  [root@sher6j-01 ~]# vim /etc/security/limits.d/20-nproc.conf</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>修改该配置文件，将其 <code>*</code> 修改为启动 <code>elasticsearch</code> 服务的用户名，此处即为 <code>es6j</code>。</p>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20201110132219246.png#pic_center" alt="在这里插入图片描述"></p>
+<p>  修改后：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110132236713.png#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li><pre><code>[root@sher6j-01 ~]# vim /etc/sysctl.conf
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  修改最大线程数，在该配置文件中加入 `vm.max_map_count=655360` 参数</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132253359.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  然后可以执行如下命令对该参数进行检测：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 ~]# sysctl -p
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132310174.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">经过以上配置的修改后，我们重新登录 `es6j` 用户，再次启动 `elasticsearch` 服务，发现可以启动成功了</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132327759.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">再次用外部浏览器访问 `http://192.168.56.102:9200/` ，即可访问成功：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110132343232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; 需要主机关闭防火墙：</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+&gt; [root@sher6j-01 ~]# systemctl stop firewalld
+&gt; <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># 安装 `Kibana`</span><br><span class="line"></span><br><span class="line">由于 `elasticsearch` 只对外暴露了端口，而没有操作界面，所以我们需要安装一个图形化界面来操作 `elasticsearch`，这就是官方提供的 `Kibana`，当然了，`Kibana` 的用途还有很多很多，作为图形化界面操作 `elasticsearch` 只是其很小的一部分。</span><br><span class="line"></span><br><span class="line">安装 `kibana` 我们以 `root` 身份安装即可，在 `\usr\local\` 目录下创建 `kibana`目录：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 local]# mkdir kibana
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">然后用ftp工具将 `kibana` 安装包上传至该目录：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/2020111016191263.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后进行解压，解压后进入其目录：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 kibana]# tar -zxvf kibana-6.8.0-linux-x86_64.tar.gz
+[root@sher6j-01 kibana]# cd kibana-6.8.0-linux-x86_64/
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">比较重要的目录就是 `bin` 和 `config`</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110161935382.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">我们进入到 `config` 目录下修改其配置文件：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 config]# vim kibana.yml
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">修改如下两处配置改成 `kibana` 要监听的 `elasticsearch` 服务的主机地址，当然本机也可以直接用原来的 `localhost`：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110161953255.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后进入 `bin` 目录运行启动脚本即可：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-01 bin]# ./kibana
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110162010750.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后在浏览器中访问该地址即可：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/202011101620281.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"># 安装中文分词器插件</span><br><span class="line"></span><br><span class="line">`elasticsearch` 默认的分词器为标准分词器(Standard Analyzer)，标准分词器对于英文为**单词分词**，对于中文为**单字分词**。也就是说，如果关键字为“中华人民共和国”，则标准分词器会分为&quot;中&quot;、 &quot;华&quot;、 &quot;人&quot;、 &quot;民&quot;、 &quot;共&quot;、 &quot;和&quot;、 &quot;国&quot;。这无疑对中文的搜索非常不适合，所以我们需要安装 `ik` 分词器的插件， `ik` 分词器的相关文档可以参考[ik分词器GitHub官网](https://github.com/medcl/elasticsearch-analysis-ik)，安装方式也可以使用本地安装或在线安装，这里使用在线安装。</span><br><span class="line"></span><br><span class="line">* 由于之前的索引库数据是由标准分词器产生的，这会使 `ik` 分词器安装错误，所以需要清空之前的索引库数据，即 `elasticsearch` 安装目录下的 `data` 文件夹：![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110204145227.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-01 elasticsearch-6.8.0]$ rm -rf data/
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* 在 `bin` 目录下之前提到过有各种脚本，其中就有用于在线安装插件的脚本，利用该脚本即可在线安装插件，其用法为：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+elasticsearch-plugin install 插件地址
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110204207238.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  所以在 `bin` 目录下键入如下命令即可，注意该 `ik` 分词器的版本必须和 `elasticsearch` 的版本一致！</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-01 bin]$ ./elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.8.0/elasticsearch-analysis-ik-6.8.0.zip
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  当出现 `installed` 即为安装好该插件：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110204228176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* 然后就可以重启 `elasticsearch` 和 `kibana` 来测试该分词器是否生效，可以看到在 `elasticsearch` 启动过程中加载了 `ik` 分词器的插件：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110204246667.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  在 `kibana` 中键入如下命令测试分词器：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+GET /_analyze
+&#123;
+  &quot;text&quot;: &quot;中华人民共和国国歌&quot;,
+  &quot;analyzer&quot;: &quot;ik_smart&quot;
+&#125;
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  可以看到成功对中文进行了分词：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201110204305454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; `ik_smart` 和 `ik_max_word` 的区别，在 `ik` 分词器的官方文档中有所说明：</span><br><span class="line">&gt;</span><br><span class="line">&gt; * `ik_max_word`: 会将文本做最细粒度的拆分，比如会将“中华人民共和国国歌”拆分为“中华人民共和国,中华人民,中华,华人,人民共和国,人民,人,民,共和国,共和,和,国国,国歌”，会穷尽各种可能的组合，适合 Term Query；</span><br><span class="line">&gt; * `ik_smart`: 会做最粗粒度的拆分，比如会将“中华人民共和国国歌”拆分为“中华人民共和国,国歌”，适合 Phrase 查询。</span><br><span class="line"></span><br><span class="line"># 搭建ElasticSearch集群环境</span><br><span class="line"></span><br><span class="line">## 安装3个节点的ElasticSearch</span><br><span class="line"></span><br><span class="line">这里就不在不同的机器上测试了，毕竟原理方式都是一样，我们先在原安装目录下建立 `escluster` 文件夹，然后将安装好的 `elasticsearch` 分别拷贝到 `escluster/node1` 、`escluster/node2`、 `escluster/node3`，以用作三个集群中不同的节点。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-03 ~]$ mkdir escluster
+[es6j@sher6j-03 ~]$ cp -r elasticsearch-6.8.0/ escluster/node1/
+[es6j@sher6j-03 ~]$ cp -r elasticsearch-6.8.0/ escluster/node2/
+[es6j@sher6j-03 ~]$ cp -r elasticsearch-6.8.0/ escluster/node3/
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162139297.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">由于都是新的节点，然后我们将复制的原 `es` 中的数据清空：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-03 node1]$ rm -rf data
+[es6j@sher6j-03 node2]$ rm -rf data
+[es6j@sher6j-03 node3]$ rm -rf data
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">## 分配Java虚拟机堆内存</span><br><span class="line"></span><br><span class="line">由于 `es` 要运行在Java虚拟机上，而此时是在一台机器上模拟的集群搭建，我给`Linux`主机分配的内存为2G，所以为了不让三个 `es` 节点同时运行导致程序崩溃，将每个节点的虚拟机内存调节至 `256M`，编辑每个节点的 `config` 目录下的 `jvm.options` 配置Java虚拟机参数，添加 `-Xms256m -Xmx256m` 配置表示Java虚拟机堆分配的最小内存为 `256M`，最大内存为 `256M`，即分配固定内存为 `256M`：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162153744.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-03 node1]$ vim config/jvm.options
+[es6j@sher6j-03 node2]$ vim config/jvm.options
+[es6j@sher6j-03 node3]$ vim config/jvm.options
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162208802.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 修改配置文件</span><br><span class="line"></span><br><span class="line">分别修改其 `config` 目录下的 `elasticsearch.yml` 文件进行不同节点的配置：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-03 node1]$ vim config/elasticsearch.yml
+[es6j@sher6j-03 node2]$ vim config/elasticsearch.yml
+[es6j@sher6j-03 node3]$ vim config/elasticsearch.yml
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">分别进行如下配置：</span><br><span class="line"></span><br><span class="line">* node1:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+cluster.name: sher6j-ess
+node.name: es-01
+network.host: 0.0.0.0
+http.port: 9201
+discovery.zen.ping.unicast.hosts: [&quot;192.168.56.103:9302&quot;, &quot;192.168.56.103:9303&quot;]
+gateway.recover_after_nodes: 3
+transport.tcp.port: 9301
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* node2:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+cluster.name: sher6j-ess
+node.name: es-02
+network.host: 0.0.0.0
+http.port: 9202
+discovery.zen.ping.unicast.hosts: [&quot;192.168.56.103:9301&quot;, &quot;192.168.56.103:9303&quot;]
+gateway.recover_after_nodes: 3
+transport.tcp.port: 9302
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">* node3:</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+cluster.name: sher6j-ess
+node.name: es-03
+network.host: 0.0.0.0
+http.port: 9203
+discovery.zen.ping.unicast.hosts: [&quot;192.168.56.103:9301&quot;, &quot;192.168.56.103:9302&quot;]
+gateway.recover_after_nodes: 3
+transport.tcp.port: 9303
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">其配置文件的含义如下：</span><br><span class="line"></span><br><span class="line">| 配置项                             | 含义                                                |</span><br><span class="line">| ---------------------------------- | --------------------------------------------------- |</span><br><span class="line">| `cluster.name`                     | 集群的名称，作为一个集群名称必须一致                |</span><br><span class="line">| `node.name`                        | 节点的名称，作为一个集群中的节点其名称不能一致      |</span><br><span class="line">| `network.host: 0.0.0.0`            | 允许监听的地址(`0.0.0.0`表示开启远程权限)           |</span><br><span class="line">| `http.port`                        | `es` 服务的监听端口                                 |</span><br><span class="line">| `discovery.zen.ping.unicast.hosts` | 集群中其他的节点，注意需要填写的端口是TCP端口！！！ |</span><br><span class="line">| `gateway.recover_after_nodes`      | 集群可做主节点的最小节点数                          |</span><br><span class="line">| `transport.tcp.port`               | 用于TCP连接的TCP端口                                |</span><br><span class="line"></span><br><span class="line">&gt; 注意不同节点间的心跳链接是通过 TCP端口，故 `discovery.zen.ping.unicast.hosts` 中**一定要写 TCP端口**，如果写成了 HTTP端口，则节点间无法互相发现</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162224558.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后分别将节点启动即可：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[es6j@sher6j-03 node1]$ bin/elasticsearch
+[es6j@sher6j-03 node2]$ bin/elasticsearch
+[es6j@sher6j-03 node3]$ bin/elasticsearch
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">可以在节点1的日志中看到节点2和3分别加入了集群：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162236915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后我们可以利用 `_cat` API访问任意节点查看集群的状态，输入任意节点网址即可 http://192.168.56.103:9201/_cat/health?v （`v`参数代表显示表头），可以看到集群的状态是健壮的 `green`：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162248919.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 安装 `elasticsearch-head` 插件，可视化集群状态</span><br><span class="line"></span><br><span class="line">默认的 `_cat` API只提供了查看集群的状态，而对于**分片**及其**副本分片**如何分布在不同集群中并无法知道细节，所以就有大佬开发了一个插件用于可视化集群状态，虽然曾经是插件，也就是说曾经是可以将 `elasticsearch-head` 直接安装到 `es` 中的 `plugins` 目录下的，但是在[elasticsearch-head的官方文档中提到](https://github.com/mobz/elasticsearch-head) ：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+for Elasticsearch 5.x, 6.x, and 7.x: site plugins are not supported. Run as a standalone server
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">也就是说在 `ElasticSearch` 的5版本以上就不支持该插件了，但还 `elasticsearch-head` 可以作为单独的服务运行，其运行的默认HTTP端口为 `9100`。</span><br><span class="line"></span><br><span class="line">## NodeJS支持</span><br><span class="line"></span><br><span class="line">该插件的使用需要有 `NodeJS` 的支持，所以在我们的及其上先以 `root` 用户安装 `NodeJS`，将安装包上传至 `/usr/local/nodejs` 目录：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-03 local]# mkdir nodejs
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162303871.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">注意 `nodejs` 的压缩包为 `tar.xz` 格式，所以需用如下命令解压：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-03 nodejs]# tar -xJvf node-v12.16.3-linux-x64.tar.xz -C ./
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">然后编辑系统变量：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-03 nodejs]# vim  ~/.bash_profile
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">追加如下环境变量：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162319236.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line">然后使环境变量生效：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-03 nodejs]# source  ~/.bash_profile
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">输入 `node -v` 显示版本即可：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/2020111316233172.png#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 安装 es-head</span><br><span class="line"></span><br><span class="line">将 `elasticsearch-head` 的压缩包放入 `/usr/local/eshead` 中：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/20201113162342114.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后解压：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+[root@sher6j-03 eshead]# unzip elasticsearch-head-master.zip
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">然后进入其目录并安装所需依赖，然后启动：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+# 设置淘宝镜像加速国内下载
+[root@sher6j-03 elasticsearch-head-master]# npm config set registry https://registry.npm.taobao.org
+[root@sher6j-03 elasticsearch-head-master]# npm install
+[root@sher6j-03 elasticsearch-head-master]# npm run start
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">然后我们访问 http://192.168.56.103:9100/ 即可：</span><br><span class="line"></span><br><span class="line">![在这里插入图片描述](https://img-blog.csdnimg.cn/2020111316235585.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">但是我们却怎么都连接不上！</span><br><span class="line"></span><br><span class="line">## 开启 `elasticsearch` 的跨域访问</span><br><span class="line"></span><br><span class="line">之所以会有上面的问题，是因为 `es-head` 并不是 `es` 的官方插件，也就是说可以理解为两个公司的产品，这就存在我们熟知的**跨域请求**，所以我们要开启 `elasticsearch` 的跨域访问，编辑其 `elasticsearch.yml` 文件，在其中加入如下两行配置： </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+http.cors.enabled: true
+http.cors.allow-origin: &quot;*&quot;
+</code></pre>
+</li>
+</ul>
+<p>然后重启 <code>es</code> 服务后，就可以用 <code>es-head</code> 连接了~：</p>
+<p><img src="https://img-blog.csdnimg.cn/20201113162406721.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xpdWppYTIxMTU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>然后我们就可以通过该插件可视化观察集群的分片情况了~</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/tags/">标签</a></li>
+         
+          <li><a href="/categories/">分类</a></li>
+         
+          <li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-elasticsearch"><span class="toc-number">1.</span> <span class="toc-text">安装 elasticsearch</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E4%BA%8E%E5%90%AF%E5%8A%A8-elasticsearch-%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%94%A8%E6%88%B7"><span class="toc-number">1.1.</span> <span class="toc-text">创建用于启动 elasticsearch 服务的用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E5%AE%89%E8%A3%85-elasticsearch-%E6%9C%8D%E5%8A%A1%EF%BC%9B"><span class="toc-number">1.2.</span> <span class="toc-text">用普通用户安装 elasticsearch 服务；</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E6%9D%83%E9%99%90"><span class="toc-number">1.3.</span> <span class="toc-text">开启远程连接权限</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&text=CentOS_ElasticSearch安装"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&is_video=false&description=CentOS_ElasticSearch安装"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CentOS_ElasticSearch安装&body=Check out this article: http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&title=CentOS_ElasticSearch安装"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&name=CentOS_ElasticSearch安装&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://sher6j.top/2022/01/06/CentOS-ElasticSearch%E5%AE%89%E8%A3%85/&t=CentOS_ElasticSearch安装"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022
+    sher6j
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/tags/">标签</a></li><!--
+     --><!--
+       --><li><a href="/categories/">分类</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/sher6j">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
